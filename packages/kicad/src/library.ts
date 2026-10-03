@@ -24,7 +24,8 @@ const PITCH_MM = 2.54;
 
 /** The folder of `<Library>.kicad_sym` files: `KICAD_SYMBOL_DIR`, or KiCad's default location. */
 export function symbolDir(): string | undefined {
-  return [process.env.KICAD_SYMBOL_DIR, process.env.KICAD10_SYMBOL_DIR, MAC_SYMBOLS, '/usr/share/kicad/symbols'].find(
+  const windows = `${process.env.ProgramFiles ?? 'C:\\Program Files'}\\KiCad\\10.0\\share\\kicad\\symbols`;
+  return [process.env.KICAD_SYMBOL_DIR, process.env.KICAD10_SYMBOL_DIR, MAC_SYMBOLS, '/usr/share/kicad/symbols', windows].find(
     (dir): dir is string => Boolean(dir) && existsSync(dir!),
   );
 }

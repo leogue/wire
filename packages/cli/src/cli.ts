@@ -1,15 +1,16 @@
-#!/usr/bin/env node
 import { parseArgs } from 'node:util';
-import { existsSync } from 'node:fs';
 import { build, check, datasheet, ercCommand, importPart, netlist, parsePages, parts, render, schema, show, webSearch, type Output } from './commands.ts';
 
-// Local settings (EXA_API_KEY) in the .env file at the root of wire; the environment wins.
-const env = new URL('../../../.env', import.meta.url);
-if (existsSync(env)) process.loadEnvFile(env);
+/** The `wire` commands; anything else on the command line goes to the agent. */
+export const COMMANDS = new Set(['check', 'netlist', 'build', 'render', 'erc', 'parts', 'show', 'import', 'datasheet', 'web', 'schema', 'help']);
 
-const HELP = `wire: electronic schematics on a grid of cells, exported to KiCad.
+const HELP = `wire: the AI harness for electronics design.
 
-usage: wire <command> [arguments]
+usage:
+  wire [pi options] [prompt]  start the design agent in this folder (pi: /login and /model choose the model)
+  wire --print "PROMPT"       run the agent on one request, without the terminal interface
+  wire agent --help           the agent's options (pi's)
+  wire <command> [arguments]  the commands below, which the agent's tools also run
 
 project commands (DIR: the project folder, default "."):
   check [DIR]                 check everything; print where each frame and block lies
@@ -35,7 +36,8 @@ library commands (--dir DIR: the project whose parts/ to include, default "."):
 KiCad 10 is needed by build, render, erc and the KiCad symbols (kicad-cli: PATH, /Applications/KiCad or KICAD_CLI);
 render and datasheet also need poppler (pdftoppm, pdftotext).`;
 
-async function run(argv: string[]): Promise<Output> {
+/** Runs a `wire` command (`argv` without the program name). */
+export async function runCli(argv: string[]): Promise<Output> {
   const { values, positionals } = parseArgs({
     args: argv,
     allowPositionals: true,
@@ -90,12 +92,3 @@ async function run(argv: string[]): Promise<Output> {
       return { code: 2, text: `unknown command "${command}"\n\n${HELP}` };
   }
 }
-
-let output: Output;
-try {
-  output = await run(process.argv.slice(2));
-} catch (error) {
-  output = { code: 1, text: `error: ${(error as Error).message}` };
-}
-(output.code === 0 ? process.stdout : process.stderr).write(`${output.text}\n`);
-process.exitCode = output.code;

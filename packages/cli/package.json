@@ -2,11 +2,9 @@
   "name": "@wire/cli",
   "private": true,
   "type": "module",
-  "bin": {
-    "wire": "./src/main.ts"
-  },
   "exports": {
-    ".": "./src/commands.ts"
+    ".": "./src/commands.ts",
+    "./cli": "./src/cli.ts"
   },
   "dependencies": {
     "@wire/core": "*",

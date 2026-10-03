@@ -4,19 +4,28 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { child, children, parse } from './sexpr.ts';
 
-/** The KiCad installation: `KICAD_CLI`, `kicad-cli` on the PATH, or the macOS application. */
+/** Where KiCad installs itself, when it is not on the PATH. */
 const MAC_KICAD = '/Applications/KiCad/KiCad.app/Contents';
+const WINDOWS_KICAD = `${process.env.ProgramFiles ?? 'C:\\Program Files'}\\KiCad\\10.0`;
 
-function which(command: string): string | undefined {
+/** A program on the PATH (`which`, or `where` on Windows), or undefined. */
+export function findCommand(command: string): string | undefined {
   try {
-    return execFileSync('which', [command], { encoding: 'utf8' }).trim() || undefined;
+    const found = execFileSync(process.platform === 'win32' ? 'where' : 'which', [command], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    return found.split(/\r?\n/)[0]?.trim() || undefined;
   } catch {
     return undefined;
   }
 }
 
+/** The KiCad installation: `KICAD_CLI`, `kicad-cli` on the PATH, or KiCad's default location (macOS, Windows). */
+/** How to install poppler, for errors. */
+export const POPPLER = 'pdftoppm not found: install poppler (macOS: brew install poppler; Linux: apt install poppler-utils; Windows: winget install oschwartz10612.Poppler, or scoop install poppler)';
+
 export function kicadCli(): string {
-  const found = [process.env.KICAD_CLI, which('kicad-cli'), `${MAC_KICAD}/MacOS/kicad-cli`].find((path) => path && existsSync(path));
+  const found = [process.env.KICAD_CLI, findCommand('kicad-cli'), `${MAC_KICAD}/MacOS/kicad-cli`, `${WINDOWS_KICAD}\\bin\\kicad-cli.exe`].find(
+    (path) => path && existsSync(path),
+  );
   if (!found) throw new Error('kicad-cli not found: install KiCad 10 or set KICAD_CLI');
   return found;
 }
@@ -36,7 +45,11 @@ function withTemp<T>(use: (dir: string) => T): T {
 
 /** A blank `.kicad_pro`, from KiCad's template when it is installed. */
 export function projectTemplate(): string {
-  const template = [`${MAC_KICAD}/SharedSupport/template/kicad.kicad_pro`, '/usr/share/kicad/template/kicad.kicad_pro'].find(existsSync);
+  const template = [
+    `${MAC_KICAD}/SharedSupport/template/kicad.kicad_pro`,
+    '/usr/share/kicad/template/kicad.kicad_pro',
+    `${WINDOWS_KICAD}\\share\\kicad\\template\\kicad.kicad_pro`,
+  ].find(existsSync);
   return template ? readFileSync(template, 'utf8') : '{}\n';
 }
 
@@ -95,8 +108,8 @@ export function exportPdf(schematic: string, out: string): void {
 
 /** One page as a PNG, through KiCad's PDF and poppler's `pdftoppm`. Pages count from 1. */
 export function exportPng(schematic: string, out: string, page = 1, width = 2400): void {
-  const pdftoppm = which('pdftoppm');
-  if (!pdftoppm) throw new Error('pdftoppm not found: install poppler (brew install poppler)');
+  const pdftoppm = findCommand('pdftoppm');
+  if (!pdftoppm) throw new Error(POPPLER);
   withTemp((dir) => {
     const pdf = join(dir, 'all.pdf');
     exportPdf(schematic, pdf);

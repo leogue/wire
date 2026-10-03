@@ -1,76 +1,73 @@
-# wire
+<h1 align="center">wire</h1>
 
-**An AI agent that designs electronic schematics, and a file format that lets it succeed.**
+<p align="center"><b>The AI harness for real electronics design.</b><br>
+Describe a board. Get a clean, verified KiCad schematic.</p>
 
-Language models are poor at schematic capture for one precise reason: a schematic is symbols and wires at
-millimetre coordinates, and a wire is connected only if its end falls exactly on a pin. Models place a
-symbol half a millimetre off, run a wire next to a pin without touching it, stack parts on top of each
-other. The result is unreadable, or electrically wrong without anyone noticing.
+<p align="center"><img src="docs/ldo-indicator.png" width="720" alt="A 5 V to 3.3 V LDO and two indicator LEDs, drawn by KiCad from a wire project"></p>
 
-wire removes that failure mode instead of asking the model to be more careful:
+---
 
-- **A grid of cells, not millimetres.** Parts sit in cells; a cell exposes connection points at the middle
-  of its sides; two facing points are connected. Nothing can be "almost connected".
-- **Frames, one per function.** A buck converter, an input protection, an MCU core: each is a frame with its
-  own small grid, placed on the sheet by one coordinate. Moving a function is changing one number.
-- **Every connection is checked**, with errors written for the agent to act on
-  (`R3.1 at [2, 4]: side N touches nothing`).
+## Why now
+
+AI for hardware design has left the lab. When OpenAI launched [GPT-6 Astra](https://openai.com/index/gpt-6-astra/)
+on September 3, 2026, one of its headline demos was the model laying out a PCB in KiCad by itself, through
+computer use. Electronics design is now a frontier-model use case. The question is no longer whether agents
+will design hardware, but how.
+
+## The problem
+
+EDA tools were built for humans: a mouse, menus, a canvas, millimetre coordinates, and a person checking by
+eye. An agent driving them through screenshots and clicks is adapting itself to an interface that was never
+meant for it. It is slow, brittle, and nothing tells it when it is wrong. Writing KiCad files directly is no
+better: a wire only connects if its end lands *exactly* on a pin, so models miss by half a millimetre, run
+wires past pins, stack parts and invent pinouts. The result looks plausible and is electrically wrong.
+
+## Our approach: an EDA tool designed for agents
+
+The agent should not adapt to tools, processes and workflows designed for people. The tool should be
+designed for the agent. wire starts again from first principles: what does a model need to draw a schematic
+right? A medium where the classic mistakes cannot happen, every other one is caught and explained, and the
+result is judged by the real tool. Humans get exactly what they use today: a native KiCad project.
+
+- **A grid, not millimetres.** Parts sit in cells; connections happen on cell edges. Nothing is ever "almost
+  connected".
+- **Frames, one per function.** Buck converter, protection, MCU core: each is a block of the page, moved with
+  one coordinate. The agent thinks in functions, like an engineer.
+- **Everything is checked.** Every pin, every net, every frame, with errors written for the agent to fix.
 - **KiCad is the output and the judge.** wire writes a native KiCad project, then has KiCad compute its own
-  netlist and refuses any difference. The agent looks at the pages exactly as KiCad draws them.
-- **Real parts.** 22,000+ KiCad symbols imported deterministically (the model never copies a pin table),
-  JLCPCB's stock and basic parts, datasheets read as page images, web search.
+  netlist and rejects any difference. The agent reviews its pages as KiCad draws them.
+- **Real parts, real pinouts.** 22,000+ KiCad symbols imported deterministically, JLCPCB stock and basic
+  parts, datasheets read as page images, web search.
 
-<p align="center"><img src="docs/ldo-indicator.png" width="720" alt="A 5 V to 3.3 V LDO and two indicator LEDs, as KiCad draws the wire project"></p>
+## Install
 
-The schematic above is this JSON (`examples/ldo-indicator/sheets/power.json`, shortened):
-
-```json
-{
-  "title": "Power",
-  "frames": {
-    "ldo": {
-      "title": "LDO 3.3 V",
-      "at": [0, 0],
-      "cells": [
-        {"at": [1, 1], "tile": "PWR", "net": "+5V"},
-        {"at": [1, 2], "wire": "NSEW"},
-        {"at": [1, 3], "tile": "C", "ref": "C1", "value": "1u"},
-        {"at": [1, 4], "tile": "GND"},
-        {"at": [3, 1], "block": "AP2112K-3.3", "ref": "U1", "mode": "wired"},
-        …
-      ]
-    },
-    "led-5v": {"title": "5 V on", "at": [8, 0], "border": false, "cells": […]}
-  }
-}
-```
-
-## Getting started
-
-Requirements: **Node 24+**, **KiCad 10** (rendering, export, symbol library) and **poppler** (`pdftoppm`,
-`pdftotext`; `brew install poppler` or `apt install poppler-utils`).
+With [Node.js 24+](https://nodejs.org) and git. macOS and Linux:
 
 ```sh
-git clone <this repository> wire && cd wire
-npm install
-npm test
+curl -fsSL https://raw.githubusercontent.com/OWNER/wire/main/install.sh | sh
 ```
 
-### The agent
+Windows (PowerShell; [Git for Windows](https://git-scm.com/download/win) provides the Bash the agent uses):
 
-The agent is the [pi](https://pi.dev) coding-agent CLI, launched with wire's tools and system prompt only.
-Run it in an empty folder for a new design; pick a model that accepts images (it looks at its renders and at
-datasheet pages) with pi's `/login` and `/model`.
+```powershell
+powershell -c "irm https://raw.githubusercontent.com/OWNER/wire/main/install.ps1 | iex"
+```
+
+The agent also needs [KiCad 10](https://www.kicad.org/download/) and poppler (`brew install poppler`,
+`apt install poppler-utils`, or `winget install oschwartz10612.Poppler`); the installer says what is missing.
+Run it again to update.
+
+## Usage
 
 ```sh
 mkdir my-board && cd my-board
-node ../packages/agent/src/main.ts                                   # interactive
-node ../packages/agent/src/main.ts --print "A USB-C powered ESP32-C3 temperature sensor, JLCPCB basic parts"
+wire                                   # start the design agent
 ```
 
-It writes the project (`project.json`, `sheets/`, `parts/`, `datasheets/`) and delivers `out/`: the KiCad
-project, a PDF and one PNG per sheet. For web search, put an [Exa](https://exa.ai) key in a `.env` file at the
-root of this repository: `EXA_API_KEY=…`.
+Choose the model with `/login` and `/model` (wire runs on [pi](https://pi.dev)); pick one that accepts
+images, since the agent looks at its renders and at datasheet pages. It writes the project (`project.json`,
+`sheets/`, `parts/`, `datasheets/`) and delivers `out/`: the KiCad project, a PDF and one PNG per sheet. For
+web search, put an [Exa](https://exa.ai) key in `~/.wire/.env`: `EXA_API_KEY=…`.
 
 | Tool | What it does |
 |---|---|
@@ -90,10 +87,9 @@ The design knowledge (format, work loop, how an engineer draws) is the skill in
 prompt. When the agent stops on a project that fails its checks, it is sent back to fix it (three times at
 most). It has shell access and is not sandboxed: run it on your own machine, in a project folder.
 
-### The command line
+### Commands
 
-Everything the agent does is a `wire` command (`npm run wire -- …`, or `npm link -w @wire/cli` for a global
-`wire`):
+Everything the agent does is also a `wire` command:
 
 ```sh
 wire check examples/ldo-indicator            # checks, and where each frame lies
@@ -173,15 +169,6 @@ npm run typecheck   # TypeScript 7, strict
 npm run schema      # regenerate the JSON Schemas after changing packages/format
 ```
 
-Node runs the TypeScript sources directly: there is no build step.
+Node runs the TypeScript sources directly: there is no build step. From a clone, `npm install`, then
+`npm run wire -- …` runs the `wire` command.
 
-## Status
-
-Working today: the format, checks, verified KiCad export, KiCad symbols, JLCPCB search, datasheets as
-images, web search and the agent. Next: reference examples for the agent to imitate, a BOM, footprint checks
-(existence, pins against pads), an unattended runner for benchmarks, and running the agent on a local
-open-weight vision model.
-
-KiCad symbols and footprints are © the KiCad library contributors (CC-BY-SA 4.0 with a design exception);
-wire reads them from the local KiCad installation and ships none of them. JLCPCB data comes from the public,
-unofficial API of jlcpcb.com.

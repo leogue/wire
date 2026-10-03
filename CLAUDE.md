@@ -11,8 +11,7 @@ English. README.md describes the format and the packages.
 npm test            # vitest, all packages (KiCad/poppler tests skip without them)
 npm run typecheck   # tsc (TypeScript 7), strict
 npm run schema      # regenerate JSON Schemas after changing packages/format
-npm run wire -- …   # the CLI
-npm run agent -- …  # the pi agent
+npm run wire -- …   # the `wire` command: a known command runs it, anything else starts the pi agent
 ```
 
 Node runs `.ts` sources directly: imports use `.ts` extensions, only erasable TypeScript syntax.

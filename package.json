@@ -12,8 +12,7 @@
     "test": "vitest run",
     "typecheck": "tsc -p .",
     "schema": "npm run schema -w @wire/format",
-    "wire": "node packages/cli/src/main.ts",
-    "agent": "node packages/agent/src/main.ts"
+    "wire": "node packages/agent/src/main.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",

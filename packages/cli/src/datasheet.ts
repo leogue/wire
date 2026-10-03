@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { POPPLER, findCommand } from '@wire/kicad';
 import type { Output } from './commands.ts';
 
 /**
@@ -17,11 +18,9 @@ const MAX_PDF_BYTES = 50 * 1024 * 1024;
 const MAX_INDEX_LINES = 150;
 
 function tool(command: string): string {
-  try {
-    return execFileSync('which', [command], { encoding: 'utf8' }).trim();
-  } catch {
-    throw new Error(`${command} not found: install poppler (brew install poppler, apt install poppler-utils)`);
-  }
+  const found = findCommand(command);
+  if (!found) throw new Error(POPPLER.replace('pdftoppm', command));
+  return found;
 }
 
 /** The PDF in the project's `datasheets/`: downloaded once from a URL, or copied there from a local file. */
