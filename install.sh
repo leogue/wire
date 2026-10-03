@@ -1,12 +1,12 @@
 #!/bin/sh
-# Installs wire, or updates it: curl -fsSL https://raw.githubusercontent.com/OWNER/wire/main/install.sh | sh
+# Installs wire, or updates it: curl -fsSL https://raw.githubusercontent.com/leogue/wire/main/install.sh | sh
 #
 # WIRE_REPO  the git repository to install from
 # WIRE_HOME  where wire lives (default ~/.wire)
 # WIRE_BIN   where the `wire` command goes (default ~/.local/bin)
 set -eu
 
-REPO="${WIRE_REPO:-https://github.com/OWNER/wire.git}"
+REPO="${WIRE_REPO:-https://github.com/leogue/wire.git}"
 HOME_DIR="${WIRE_HOME:-$HOME/.wire}"
 BIN_DIR="${WIRE_BIN:-$HOME/.local/bin}"
 

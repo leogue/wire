@@ -1,11 +1,11 @@
 # Installs wire on Windows, or updates it:
-#   powershell -c "irm https://raw.githubusercontent.com/OWNER/wire/main/install.ps1 | iex"
+#   powershell -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"
 #
 # WIRE_REPO  the git repository to install from
 # WIRE_HOME  where wire lives (default %USERPROFILE%\.wire)
 $ErrorActionPreference = 'Stop'
 
-$Repo = if ($env:WIRE_REPO) { $env:WIRE_REPO } else { 'https://github.com/OWNER/wire.git' }
+$Repo = if ($env:WIRE_REPO) { $env:WIRE_REPO } else { 'https://github.com/leogue/wire.git' }
 $HomeDir = if ($env:WIRE_HOME) { $env:WIRE_HOME } else { Join-Path $env:USERPROFILE '.wire' }
 $BinDir = Join-Path $HomeDir 'bin'
 

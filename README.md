@@ -44,13 +44,13 @@ result is judged by the real tool. Humans get exactly what they use today: a nat
 With [Node.js 24+](https://nodejs.org) and git. macOS and Linux:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/OWNER/wire/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/leogue/wire/main/install.sh | sh
 ```
 
 Windows (PowerShell; [Git for Windows](https://git-scm.com/download/win) provides the Bash the agent uses):
 
 ```powershell
-powershell -c "irm https://raw.githubusercontent.com/OWNER/wire/main/install.ps1 | iex"
+powershell -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"
 ```
 
 The agent also needs [KiCad 10](https://www.kicad.org/download/) and poppler (`brew install poppler`,
