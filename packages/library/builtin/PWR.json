@@ -1,0 +1,15 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "power",
+  "description": "Power: creates a global label named after the value",
+  "keywords": ["global", "power"],
+  "textSize": 1.27,
+  "fields": {"value": "N"},
+  "pins": [
+    {"number": "1", "name": "", "side": "S", "type": "power_in", "length": 0}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[0, -5.08], [0, 1.27]]},
+    {"kind": "polyline", "points": [[-0.762, 0], [0, 1.27], [0.762, 0]]}
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@wire/kicad",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@wire/core": "*", "@wire/format": "*" }
+}

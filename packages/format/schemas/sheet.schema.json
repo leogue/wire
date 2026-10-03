@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "maxLength": 512
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "paper": {
+      "type": "string",
+      "enum": [
+        "A4",
+        "A3",
+        "A2"
+      ]
+    },
+    "frames": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]{0,31}$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "at": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "border": {
+            "type": "boolean"
+          },
+          "cells": {
+            "maxItems": 5000,
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "tile": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.+-]{0,63}$"
+                    },
+                    "ref": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{1,4}[1-9][0-9]{0,3}$"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "net": {
+                      "type": "string",
+                      "pattern": "^[^\\s\\p{Cc}\\p{Cf}]{1,64}$"
+                    },
+                    "rot": {
+                      "type": "number",
+                      "enum": [
+                        0,
+                        90,
+                        180,
+                        270
+                      ]
+                    },
+                    "flip": {
+                      "type": "string",
+                      "enum": [
+                        "NS",
+                        "EW"
+                      ]
+                    },
+                    "pinmap": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9+-]{1,8}$"
+                      },
+                      "additionalProperties": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9+-]{1,8}$"
+                      }
+                    },
+                    "footprint": {
+                      "type": "string",
+                      "maxLength": 256,
+                      "pattern": "^[^\\s:\\p{Cc}\\p{Cf}]+:[^\\s:\\p{Cc}\\p{Cf}]+$"
+                    },
+                    "fields": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[A-Za-z]([A-Za-z0-9 _.-]*[A-Za-z0-9_.])?$"
+                      },
+                      "additionalProperties": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    },
+                    "dnp": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "tile"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "block": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.+-]{0,63}$"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9_+-]{1,16}$"
+                    },
+                    "ref": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{1,4}[1-9][0-9]{0,3}$"
+                    },
+                    "value": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 64
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "wired",
+                        "label"
+                      ]
+                    },
+                    "nets": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                      },
+                      "additionalProperties": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "const": "NC"
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^[^\\s\\p{Cc}\\p{Cf}]{1,64}$"
+                          }
+                        ]
+                      }
+                    },
+                    "unused": {
+                      "type": "string",
+                      "const": "NC"
+                    },
+                    "footprint": {
+                      "type": "string",
+                      "maxLength": 256,
+                      "pattern": "^[^\\s:\\p{Cc}\\p{Cf}]+:[^\\s:\\p{Cc}\\p{Cf}]+$"
+                    },
+                    "fields": {
+                      "type": "object",
+                      "propertyNames": {
+                        "type": "string",
+                        "maxLength": 64,
+                        "pattern": "^[A-Za-z]([A-Za-z0-9 _.-]*[A-Za-z0-9_.])?$"
+                      },
+                      "additionalProperties": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      }
+                    },
+                    "dnp": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "block",
+                    "ref",
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "wire": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "pattern": "^[NESW]{2,4}$"
+                        },
+                        {
+                          "type": "string",
+                          "const": "NS|EW"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "wire"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "run": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 1000
+                            },
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 1000
+                            }
+                          ],
+                          "items": false,
+                          "minItems": 2,
+                          "maxItems": 2
+                        },
+                        {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 1000
+                            },
+                            {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 1000
+                            }
+                          ],
+                          "items": false,
+                          "minItems": 2,
+                          "maxItems": 2
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  },
+                  "required": [
+                    "run"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "label": {
+                      "type": "string",
+                      "pattern": "^[^\\s\\p{Cc}\\p{Cf}]{1,64}$"
+                    },
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "W",
+                        "E"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "label",
+                    "side"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "at": {
+                      "type": "array",
+                      "prefixItems": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 1000
+                        }
+                      ],
+                      "items": false,
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "title",
+          "at",
+          "cells"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "notes": {
+      "maxItems": 256,
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "at",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "title",
+    "frames"
+  ],
+  "additionalProperties": false,
+  "$id": "sheet.schema.json"
+}

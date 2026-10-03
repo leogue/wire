@@ -1,0 +1,31 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "Q",
+  "value": "PMOS",
+  "description": "P-MOSFET transistor",
+  "keywords": ["PMOS", "P-MOS"],
+  "fields": {"ref": "NE", "value": "SE"},
+  "pins": [
+    {"number": "S", "name": "S", "side": "N", "type": "passive", "length": 2.54},
+    {"number": "G", "name": "G", "side": "W", "type": "input", "length": 2.794},
+    {"number": "D", "name": "D", "side": "S", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[-2.286, 1.905], [-2.286, -1.905]]},
+    {"kind": "polyline", "points": [[-1.778, 2.286], [-1.778, 1.27]]},
+    {"kind": "polyline", "points": [[-1.778, 0.508], [-1.778, -0.508]]},
+    {"kind": "polyline", "points": [[-1.778, -1.27], [-1.778, -2.286]]},
+    {"kind": "polyline", "points": [[0, 2.54], [0, 0], [-1.778, 0]], "width": 0.1524},
+    {"kind": "polyline", "points": [[0, 1.778], [-1.778, 1.778]], "width": 0.1524},
+    {"kind": "polyline", "points": [[0, -2.54], [0, -1.778], [-1.778, -1.778]], "width": 0.1524},
+    {"kind": "polyline", "points": [[0, -1.778], [0.762, -1.778], [0.762, 1.778], [0, 1.778]], "width": 0.1524},
+    {"kind": "polyline", "points": [[-0.254, 0], [-1.27, 0.381], [-1.27, -0.381], [-0.254, 0]], "width": 0.1524, "fill": "outline"},
+    {"kind": "polyline", "points": [[0.381, 0.381], [1.143, 0.381]], "width": 0.1524},
+    {"kind": "polyline", "points": [[0.762, 0.381], [0.381, -0.254], [1.143, -0.254], [0.762, 0.381]], "width": 0.1524},
+    {"kind": "arc", "start": [-0.889, 2.794], "mid": [-3.683, 0], "end": [-0.889, -2.794]},
+    {"kind": "arc", "start": [-0.889, -2.794], "mid": [1.905, 0], "end": [-0.889, 2.794]},
+    {"kind": "polyline", "points": [[0.277, 1.893], [0.115, 2.055], [-0.115, 2.055], [-0.277, 1.893], [-0.277, 1.663], [-0.115, 1.501], [0.115, 1.501], [0.277, 1.663], [0.277, 1.893]], "width": 0.1524, "fill": "outline"},
+    {"kind": "polyline", "points": [[0.277, -1.893], [0.115, -2.055], [-0.115, -2.055], [-0.277, -1.893], [-0.277, -1.663], [-0.115, -1.501], [0.115, -1.501], [0.277, -1.663], [0.277, -1.893]], "width": 0.1524, "fill": "outline"}
+  ]
+}

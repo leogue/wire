@@ -1,0 +1,17 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "FB",
+  "value": "FB",
+  "description": "Ferrite bead",
+  "keywords": ["ferrite", "bead", "inductor", "filter"],
+  "footprintFilters": ["Inductor_*", "L_*", "*Ferrite*"],
+  "fields": {"ref": "SW", "value": "NW"},
+  "pins": [
+    {"number": "1", "name": "", "side": "N", "type": "passive", "length": 3.81},
+    {"number": "2", "name": "", "side": "S", "type": "passive", "length": 3.81}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[-0.23, 1.6], [-1.27, 1.0], [0.23, -1.6], [1.27, -1.0], [-0.23, 1.6]], "fill": "background"}
+  ]
+}

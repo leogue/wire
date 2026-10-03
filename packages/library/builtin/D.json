@@ -1,0 +1,18 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "D",
+  "value": "D",
+  "description": "Diode",
+  "keywords": ["diode"],
+  "footprintFilters": ["D_*"],
+  "fields": {"ref": "SW", "value": "NW"},
+  "pins": [
+    {"number": "2", "name": "A", "side": "N", "type": "passive", "length": 4.064},
+    {"number": "1", "name": "K", "side": "S", "type": "passive", "length": 4.064}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[-1.27, 1.016], [1.27, 1.016], [0, -1.016], [-1.27, 1.016]]},
+    {"kind": "polyline", "points": [[-1.27, -1.016], [1.27, -1.016]]}
+  ]
+}

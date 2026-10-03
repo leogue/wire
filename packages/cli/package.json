@@ -1,0 +1,19 @@
+{
+  "name": "@wire/cli",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "wire": "./src/main.ts"
+  },
+  "exports": {
+    ".": "./src/commands.ts"
+  },
+  "dependencies": {
+    "@wire/core": "*",
+    "@wire/format": "*",
+    "@wire/kicad": "*",
+    "@wire/library": "*",
+    "pdfjs-dist": "^6.3.289",
+    "zod": "^4.6.5"
+  }
+}

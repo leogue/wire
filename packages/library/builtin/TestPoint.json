@@ -1,0 +1,17 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "TP",
+  "value": "TP",
+  "description": "Test point: a pad to probe or jumper a net",
+  "keywords": ["test", "point", "tp", "probe", "pad"],
+  "footprintFilters": ["Pin*", "Test*"],
+  "fields": {"ref": "SW", "value": "SE"},
+  "pins": [
+    {"number": "1", "name": "1", "side": "N", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "arc", "start": [1.016, 1.524], "mid": [0, 2.54], "end": [-1.016, 1.524]},
+    {"kind": "arc", "start": [-1.016, 1.524], "mid": [0, 0.508], "end": [1.016, 1.524]}
+  ]
+}

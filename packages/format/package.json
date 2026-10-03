@@ -1,0 +1,8 @@
+{
+  "name": "@wire/format",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "schema": "node scripts/json-schema.ts" },
+  "dependencies": { "zod": "^4.6.5" }
+}

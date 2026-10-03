@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../packages/format/schemas/sheet.schema.json",
+  "title": "Power",
+  "frames": {
+    "ldo": {
+      "title": "LDO 3.3 V",
+      "at": [0, 0],
+      "cells": [
+        {"at": [1, 1], "tile": "PWR", "net": "+5V"},
+        {"at": [0, 2], "tile": "PWR_FLAG", "rot": 270},
+        {"at": [1, 2], "wire": "NSEW"},
+        {"at": [2, 2], "wire": "WES"},
+        {"at": [2, 3], "wire": "NE"},
+        {"at": [1, 3], "tile": "C", "ref": "C1", "value": "1u"},
+        {"at": [1, 4], "tile": "GND"},
+        {"at": [3, 1], "block": "AP2112K-3.3", "ref": "U1", "mode": "wired"},
+        {"at": [1, 5], "tile": "PWR_FLAG", "rot": 270},
+        {"at": [2, 5], "wire": "ESW"},
+        {"at": [2, 6], "tile": "GND"},
+        {"at": [5, 1], "tile": "PWR", "net": "+3V3"},
+        {"at": [5, 2], "wire": "WNS"},
+        {"at": [5, 3], "tile": "C", "ref": "C2", "value": "1u"},
+        {"at": [5, 4], "tile": "GND"}
+      ]
+    },
+    "led-5v": {
+      "title": "5 V on",
+      "at": [8, 0],
+      "border": false,
+      "cells": [
+        {"at": [0, 1], "tile": "PWR", "net": "+5V"},
+        {"at": [0, 2], "tile": "R", "ref": "R1", "value": "1k"},
+        {"at": [0, 3], "tile": "LED", "ref": "D1", "value": "RED"},
+        {"at": [0, 4], "tile": "GND"}
+      ]
+    },
+    "led-3v3": {
+      "title": "3.3 V on",
+      "at": [10, 0],
+      "border": false,
+      "cells": [
+        {"at": [0, 1], "tile": "PWR", "net": "+3V3"},
+        {"at": [0, 2], "tile": "R", "ref": "R2", "value": "1k"},
+        {"at": [0, 3], "tile": "LED", "ref": "D2", "value": "GRN"},
+        {"at": [0, 4], "tile": "GND"}
+      ]
+    }
+  }
+}

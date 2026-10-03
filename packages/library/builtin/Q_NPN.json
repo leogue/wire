@@ -1,0 +1,23 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "Q",
+  "value": "NPN",
+  "description": "NPN bipolar junction transistor",
+  "keywords": ["BJT"],
+  "fields": {"ref": "NE", "value": "SE"},
+  "pins": [
+    {"number": "C", "name": "C", "side": "N", "type": "passive", "length": 2.54},
+    {"number": "B", "name": "B", "side": "W", "type": "input", "length": 2.54},
+    {"number": "E", "name": "E", "side": "S", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[-2.54, 0], [-1.905, 0]]},
+    {"kind": "polyline", "points": [[-1.905, 1.905], [-1.905, -1.905]], "width": 0.508},
+    {"kind": "polyline", "points": [[-1.905, 0.635], [0, 2.54]]},
+    {"kind": "polyline", "points": [[-1.905, -0.635], [0, -2.54]]},
+    {"kind": "polyline", "points": [[-1.27, -1.778], [-0.762, -1.27], [-0.254, -2.286], [-1.27, -1.778]], "fill": "outline"},
+    {"kind": "arc", "start": [-4.0894, 0], "mid": [-1.27, 2.8194], "end": [1.5494, 0]},
+    {"kind": "arc", "start": [1.5494, 0], "mid": [-1.27, -2.8194], "end": [-4.0894, 0]}
+  ]
+}

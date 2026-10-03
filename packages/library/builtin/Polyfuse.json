@@ -1,0 +1,19 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "F",
+  "value": "PTC",
+  "description": "Resettable fuse, polymeric positive temperature coefficient",
+  "keywords": ["resettable", "fuse", "PTC", "PPTC", "polyfuse", "polyswitch"],
+  "footprintFilters": ["*polyfuse*", "*PTC*"],
+  "fields": {"ref": "SW", "value": "NW"},
+  "pins": [
+    {"number": "1", "name": "", "side": "N", "type": "passive", "length": 2.54},
+    {"number": "2", "name": "", "side": "S", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "rect", "from": [-1.016, -2.54], "to": [1.016, 2.54], "fill": "background"},
+    {"kind": "polyline", "points": [[0, 2.54], [0, -2.54]]},
+    {"kind": "polyline", "points": [[-1.778, 2.54], [-1.778, 1.778], [1.778, -1.778], [1.778, -2.54]]}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "block",
+  "source": "Regulator_Linear:AP2112K-3.3",
+  "ref": "U",
+  "value": "AP2112K-3.3",
+  "description": "600mA low dropout linear regulator, with enable pin, 3.8V-6V input voltage range, 3.3V fixed positive output, SOT-23-5",
+  "keywords": ["linear", "regulator", "ldo", "fixed", "positive"],
+  "footprint": "Package_TO_SOT_SMD:SOT-23-5",
+  "datasheet": "https://www.diodes.com/assets/Datasheets/AP2112.pdf",
+  "pins": {
+    "1": {"name": "VIN", "type": "power_in"},
+    "2": {"name": "GND", "type": "power_in"},
+    "3": {"name": "EN", "type": "input"},
+    "4": {"name": "NC", "type": "no_connect"},
+    "5": {"name": "VOUT", "type": "power_out"}
+  },
+  "units": {"A": {"W": ["1", "3", null, "2"], "E": ["5", "4"]}}
+}

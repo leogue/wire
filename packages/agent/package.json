@@ -1,0 +1,12 @@
+{
+  "name": "@wire/agent",
+  "private": true,
+  "type": "module",
+  "bin": { "wire-agent": "./src/main.ts" },
+  "exports": { ".": "./src/extension.ts" },
+  "dependencies": {
+    "@earendil-works/pi-ai": "1.0.0",
+    "@earendil-works/pi-coding-agent": "1.0.0",
+    "@wire/cli": "*"
+  }
+}

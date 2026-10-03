@@ -1,0 +1,10 @@
+{
+  "$schema": "../../packages/format/schemas/project.schema.json",
+  "name": "5 V to 3.3 V LDO with indicators",
+  "sheets": ["power"],
+  "defaults": {
+    "R": {"footprint": "Resistor_SMD:R_0603_1608Metric"},
+    "C": {"footprint": "Capacitor_SMD:C_0603_1608Metric"},
+    "D": {"footprint": "LED_SMD:LED_0603_1608Metric"}
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "wire",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc -p .",
+    "schema": "npm run schema -w @wire/format",
+    "wire": "node packages/cli/src/main.ts",
+    "agent": "node packages/agent/src/main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
+  }
+}

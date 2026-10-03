@@ -1,0 +1,18 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "F",
+  "value": "1A",
+  "description": "Fuse",
+  "keywords": ["fuse"],
+  "footprintFilters": ["*Fuse*"],
+  "fields": {"ref": "SW", "value": "NW"},
+  "pins": [
+    {"number": "1", "name": "", "side": "N", "type": "passive", "length": 2.54},
+    {"number": "2", "name": "", "side": "S", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "rect", "from": [-1.016, -2.54], "to": [1.016, 2.54], "fill": "background"},
+    {"kind": "polyline", "points": [[0, 2.54], [0, -2.54]]}
+  ]
+}

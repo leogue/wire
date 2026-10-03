@@ -1,0 +1,15 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "power",
+  "flag": true,
+  "description": "Tells the ERC where the power comes from",
+  "keywords": ["flag", "power"],
+  "textSize": 1.27,
+  "fields": {"value": "hidden"},
+  "pins": [
+    {"number": "1", "name": "", "side": "S", "type": "power_out", "length": 0}
+  ],
+  "graphics": [
+    {"kind": "polyline", "points": [[0, -5.08], [0, -1.27], [-1.016, -0.635], [0, 0], [1.016, -0.635], [0, -1.27]]}
+  ]
+}

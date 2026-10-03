@@ -1,0 +1,20 @@
+{
+  "$schema": "../../format/schemas/part.schema.json",
+  "kind": "tile",
+  "ref": "L",
+  "value": "L",
+  "description": "Inductor",
+  "keywords": ["inductor", "choke", "coil"],
+  "footprintFilters": ["Choke_*", "*Coil*", "Inductor_*", "L_*"],
+  "fields": {"ref": "SW", "value": "NW"},
+  "pins": [
+    {"number": "1", "name": "", "side": "N", "type": "passive", "length": 2.54},
+    {"number": "2", "name": "", "side": "S", "type": "passive", "length": 2.54}
+  ],
+  "graphics": [
+    {"kind": "arc", "start": [0, 2.54], "mid": [0.635, 1.905], "end": [0, 1.27]},
+    {"kind": "arc", "start": [0, 1.27], "mid": [0.635, 0.635], "end": [0, 0.0]},
+    {"kind": "arc", "start": [0, 0.0], "mid": [0.635, -0.635], "end": [0, -1.27]},
+    {"kind": "arc", "start": [0, -1.27], "mid": [0.635, -1.905], "end": [0, -2.54]}
+  ]
+}

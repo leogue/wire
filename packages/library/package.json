@@ -1,0 +1,7 @@
+{
+  "name": "@wire/library",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@wire/format": "*" }
+}
