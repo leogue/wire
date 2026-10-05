@@ -1,5 +1,7 @@
-# Installs wire on Windows, or updates it:
-#   powershell -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"
+# Installs wire on Windows, or updates it. From PowerShell:
+#   irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex
+# From cmd.exe:
+#   powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"
 #
 # WIRE_REPO  the git repository to install from
 # WIRE_HOME  where wire lives (default %USERPROFILE%\.wire)
@@ -16,6 +18,7 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Fail 'Git for Windows is required (the agent also uses its Git Bash): https://git-scm.com/download/win'
 }
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) { Fail 'Node.js 24 or later is required: https://nodejs.org' }
+if (-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)) { Fail 'npm is required (it comes with Node.js): https://nodejs.org' }
 $NodeMajor = [int](node -p 'parseInt(process.versions.node)')
 if ($NodeMajor -lt 24) { Fail "Node.js 24 or later is required (found $(node -v)): https://nodejs.org" }
 
@@ -31,7 +34,8 @@ if ($LASTEXITCODE -ne 0) { Fail 'git failed' }
 
 Push-Location $HomeDir
 try {
-  npm ci --omit=dev --no-audit --no-fund --loglevel=error
+  # npm.cmd, not npm: `npm` resolves to npm.ps1, which the default execution policy refuses to run.
+  npm.cmd ci --omit=dev --no-audit --no-fund --loglevel=error
   if ($LASTEXITCODE -ne 0) { Fail 'npm ci failed' }
 } finally {
   Pop-Location

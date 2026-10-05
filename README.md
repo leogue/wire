@@ -47,11 +47,13 @@ With [Node.js 24+](https://nodejs.org) and git. macOS and Linux:
 curl -fsSL https://raw.githubusercontent.com/leogue/wire/main/install.sh | sh
 ```
 
-Windows (PowerShell; [Git for Windows](https://git-scm.com/download/win) provides the Bash the agent uses):
+Windows, from PowerShell ([Git for Windows](https://git-scm.com/download/win) provides the Bash the agent uses):
 
 ```powershell
-powershell -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"
+irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex
 ```
+
+From cmd.exe: `powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"`.
 
 The agent also needs [KiCad 10](https://www.kicad.org/download/) and poppler (`brew install poppler`,
 `apt install poppler-utils`, or `winget install oschwartz10612.Poppler`); the installer says what is missing.
