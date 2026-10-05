@@ -39,25 +39,33 @@ result is judged by the real tool. Humans get exactly what they use today: a nat
 - **Real parts, real pinouts.** 22,000+ KiCad symbols imported deterministically, JLCPCB stock and basic
   parts, datasheets read as page images, web search.
 
+## Requirements
+
+| | macOS | Linux (Debian, Ubuntu) | Windows |
+|---|---|---|---|
+| [Node.js 24+](https://nodejs.org) and git | `brew install node git` | from [nodejs.org](https://nodejs.org), `apt install git` | from [nodejs.org](https://nodejs.org), [Git for Windows](https://git-scm.com/download/win) (its Bash is used by the agent) |
+| [KiCad 10](https://www.kicad.org/download/) | `brew install --cask kicad` | [kicad.org/download/linux](https://www.kicad.org/download/linux/) | [kicad.org/download/windows](https://www.kicad.org/download/windows/) |
+| poppler (datasheets, PNG pages) | `brew install poppler` | `apt install poppler-utils` | `winget install oschwartz10612.Poppler` |
+
+KiCad renders, exports and checks every schematic and provides the symbol library; poppler turns datasheets
+and pages into images. The installer says what is still missing.
+
 ## Install
 
-With [Node.js 24+](https://nodejs.org) and git. macOS and Linux:
+macOS and Linux:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/leogue/wire/main/install.sh | sh
 ```
 
-Windows, from PowerShell ([Git for Windows](https://git-scm.com/download/win) provides the Bash the agent uses):
+Windows, from PowerShell:
 
 ```powershell
 irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex
 ```
 
 From cmd.exe: `powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/leogue/wire/main/install.ps1 | iex"`.
-
-The agent also needs [KiCad 10](https://www.kicad.org/download/) and poppler (`brew install poppler`,
-`apt install poppler-utils`, or `winget install oschwartz10612.Poppler`); the installer says what is missing.
-Run it again to update.
+Run the installer again to update; open a new terminal afterwards so that `wire` is on the PATH.
 
 ## Usage
 
