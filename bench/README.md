@@ -25,8 +25,8 @@ Ollama, wire) and the models.
 ```sh
 node bench/run.ts --model ollama/qwen3.6:35b-a3b-ctx128k --jobs 4
 node bench/run.ts --model ollama/qwen3.6:35b-a3b-ctx128k --model ollama/qwen3.8:27b-ctx128k --tasks ldo --modes wire
-node bench/run.ts --report bench/results/<run>    # rebuild a summary
+node bench/run.ts --report ~/wire-bench/<run>     # rebuild a summary
 ```
 
-Tasks: `ldo` (a quick check), `air-quality`, `powerbank`, `expresslrs`. Results go to `bench/results/<date>/`:
-per run, the project, the agent's events (JSONL), `result.json`, the pages as PNG; `summary.md` compares them.
+Tasks: `ldo` (a quick check, close to wire's example: not for comparisons), `air-quality`, `powerbank`,
+`expresslrs`. Results go to `~/wire-bench/<date>/` (`WIRE_BENCH_DIR`), outside wire's folder: per run, the project, the agent's events (JSONL), `result.json`, the pages as PNG; `summary.md` compares them.

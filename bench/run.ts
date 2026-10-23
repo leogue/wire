@@ -11,13 +11,14 @@
  *
  *   node bench/run.ts --model ollama/qwen3.6:35b-a3b-ctx128k [--model …] [--tasks ldo,air-quality]
  *                     [--modes wire,baseline] [--jobs 2] [--timeout 60]
- *   node bench/run.ts --report bench/results/<run>     rebuild a run's summary
+ *   node bench/run.ts --report ~/wire-bench/<run>     rebuild a run's summary
  *
- * Results go to bench/results/<date>/: per run the project, the agent's events (JSONL), result.json and the
+ * Results go to ~/wire-bench/<date>/ (WIRE_BENCH_DIR), outside wire's folder: per run the project, the agent's events (JSONL), result.json and the
  * pages as PNG; summary.md compares them.
  */
 import { execFileSync, spawn } from 'node:child_process';
 import { createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -275,7 +276,8 @@ if (models.length === 0 || unknown.length > 0 || models.some((model) => !model.i
   process.exit(1);
 }
 
-const folder = join(ROOT, 'bench', 'results', new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-'));
+// Outside wire's folder: the agents must not find wire's examples (the ldo task is one of them).
+const folder = join(process.env.WIRE_BENCH_DIR ?? join(homedir(), 'wire-bench'), new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-'));
 const brief = baselineBrief(kicadCli(), symbolDir());
 const queue = models.flatMap((model) => tasks.flatMap((task) => modes.map((mode) => ({ model, task, mode }))));
 console.log(`${queue.length} runs, ${values.jobs} at a time → ${relative(process.cwd(), folder)}`);
