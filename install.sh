@@ -1,9 +1,10 @@
 #!/bin/sh
 # Installs wire, or updates it: curl -fsSL https://raw.githubusercontent.com/leogue/wire/main/install.sh | sh
 #
-# WIRE_REPO  the git repository to install from
-# WIRE_HOME  where wire lives (default ~/.wire)
-# WIRE_BIN   where the `wire` command goes (default ~/.local/bin)
+# WIRE_REPO    the git repository to install from
+# WIRE_BRANCH  the branch to install (default: the repository's default branch)
+# WIRE_HOME    where wire lives (default ~/.wire)
+# WIRE_BIN     where the `wire` command goes (default ~/.local/bin)
 set -eu
 
 REPO="${WIRE_REPO:-https://github.com/leogue/wire.git}"
@@ -24,7 +25,7 @@ if [ -d "$HOME_DIR/.git" ]; then
 else
   [ -e "$HOME_DIR" ] && fail "$HOME_DIR exists and is not a wire installation: set WIRE_HOME"
   say "Installing wire in $HOME_DIR"
-  git clone --quiet --depth 1 "$REPO" "$HOME_DIR"
+  git clone --quiet --depth 1 ${WIRE_BRANCH:+--branch "$WIRE_BRANCH"} "$REPO" "$HOME_DIR"
 fi
 (cd "$HOME_DIR" && npm ci --omit=dev --no-audit --no-fund --loglevel=error)
 
