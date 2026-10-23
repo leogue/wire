@@ -54,6 +54,9 @@ for (const model of models) {
     name: `${model} (${Math.round(context / 1024)}k, local)`,
     input: vision ? ['text', 'image'] : ['text'],
     reasoning: thinking,
+    // Ollama turns thinking off with reasoning_effort "none" (`--thinking off`): Qwen models that think
+    // with tools sometimes end a turn with nothing.
+    ...(thinking ? { thinkingLevelMap: { off: 'none' }, compat: { supportsReasoningEffort: true } } : {}),
     contextWindow: context,
     maxTokens: 32768,
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },

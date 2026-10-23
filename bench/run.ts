@@ -10,7 +10,7 @@
  * (components, nets), KiCad's ERC, and the parts the request names.
  *
  *   node bench/run.ts --model ollama/qwen3.6:35b-a3b-ctx128k [--model …] [--tasks ldo,air-quality]
- *                     [--modes wire,baseline] [--jobs 2] [--timeout 60]
+ *                     [--modes wire,baseline] [--jobs 2] [--timeout 60] [--thinking off|low|medium|high]
  *   node bench/run.ts --report ~/wire-bench/<run>     rebuild a run's summary
  *
  * Results go to ~/wire-bench/<date>/ (WIRE_BENCH_DIR), outside wire's folder: per run the project, the agent's events (JSONL), result.json and the
@@ -44,6 +44,8 @@ interface Result {
   turns: number;
   toolCalls: number;
   toolErrors: number;
+  /** Times it was told to go on after stopping without a schematic. */
+  nudges: number;
   outputTokens: number;
   /** The largest context sent in one request. */
   contextTokens: number;
@@ -65,8 +67,12 @@ interface Result {
 
 // ---------- running an agent ----------
 
-function agentArgs(mode: Mode, provider: string, model: string, prompt: string, sessions: string): string[] {
-  const common = ['--mode', 'json', '--provider', provider, '--model', model, '--session-dir', sessions];
+/** When an agent stops without a KiCad schematic, it is told to go on, in the same session, this many times. */
+const NUDGES = 5;
+const NUDGE = "Tu t'es arrêté avant d'avoir livré le schéma KiCad. Continue avec tes outils jusqu'au livrable final, sans poser de question.";
+
+function agentArgs(mode: Mode, provider: string, model: string, prompt: string, sessions: string, resume: boolean, thinking?: string): string[] {
+  const common = ['--mode', 'json', '--provider', provider, '--model', model, '--session-dir', sessions, ...(resume ? ['--continue'] : []), ...(thinking ? ['--thinking', thinking] : [])];
   if (mode === 'wire') return [WIRE, ...common, prompt];
   return [PI, '--no-extensions', '--no-skills', '--no-prompt-templates', '--no-context-files', '--tools', 'read,bash,edit,write', ...common, prompt];
 }
@@ -82,50 +88,65 @@ interface AgentEvent {
   toolResults?: { isError?: boolean }[];
 }
 
-async function runAgent(dir: string, mode: Mode, modelSpec: string, prompt: string, timeoutMinutes: number) {
+async function runAgent(dir: string, mode: Mode, modelSpec: string, prompt: string, timeoutMinutes: number, thinking?: string) {
   const [provider, ...rest] = modelSpec.split('/');
   const model = rest.join('/');
   const project = join(dir, 'project');
   mkdirSync(project, { recursive: true });
   writeFileSync(join(dir, 'prompt.md'), `${prompt}\n`);
   const events = createWriteStream(join(dir, 'events.jsonl'));
-  const stats = { turns: 0, toolCalls: 0, toolErrors: 0, outputTokens: 0, contextTokens: 0 };
+  const stderr = createWriteStream(join(dir, 'stderr.log'));
+  const stats = { turns: 0, toolCalls: 0, toolErrors: 0, outputTokens: 0, contextTokens: 0, nudges: 0 };
   const started = Date.now();
-  const child = spawn(process.execPath, agentArgs(mode, provider!, model, prompt, join(dir, 'session')), { cwd: project, stdio: ['ignore', 'pipe', 'pipe'] });
-  child.stderr.pipe(createWriteStream(join(dir, 'stderr.log')));
-  let buffer = '';
-  child.stdout.on('data', (chunk: Buffer) => {
-    events.write(chunk);
-    buffer += chunk.toString('utf8');
-    const lines = buffer.split('\n');
-    buffer = lines.pop() ?? '';
-    for (const line of lines) {
-      let event: AgentEvent;
-      try {
-        event = JSON.parse(line) as AgentEvent;
-      } catch {
-        continue;
-      }
-      if (event.type === 'message_end' && event.message?.role === 'assistant') {
-        const usage = event.message.usage ?? {};
-        stats.outputTokens += usage.output ?? 0;
-        stats.contextTokens = Math.max(stats.contextTokens, (usage.input ?? 0) + (usage.cacheRead ?? 0));
-      }
-      if (event.type === 'turn_end') {
-        stats.turns++;
-        stats.toolCalls += (event.message?.content ?? []).filter((block) => block.type === 'toolCall').length;
-        stats.toolErrors += (event.toolResults ?? []).filter((result) => result.isError).length;
-      }
-    }
-  });
+  const deadline = started + timeoutMinutes * 60_000;
   let timedOut = false;
-  const timer = setTimeout(() => {
-    timedOut = true;
-    child.kill('SIGTERM');
-  }, timeoutMinutes * 60_000);
-  const exitCode = await new Promise<number | null>((done) => child.on('exit', (code) => done(code)));
-  clearTimeout(timer);
+  let exitCode: number | null = null;
+  // Local models sometimes end a turn with nothing (no tool call, no text) or lose the stream: both modes
+  // get the same nudges, until a schematic exists or time runs out.
+  for (let attempt = 0; attempt <= NUDGES && !timedOut; attempt++) {
+    if (attempt > 0) {
+      if (rootSchematic(project) || Date.now() >= deadline) break;
+      stats.nudges++;
+    }
+    const child = spawn(process.execPath, agentArgs(mode, provider!, model, attempt === 0 ? prompt : NUDGE, join(dir, 'session'), attempt > 0, thinking), {
+      cwd: project,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    child.stderr.on('data', (chunk: Buffer) => stderr.write(chunk));
+    let buffer = '';
+    child.stdout.on('data', (chunk: Buffer) => {
+      events.write(chunk);
+      buffer += chunk.toString('utf8');
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        let event: AgentEvent;
+        try {
+          event = JSON.parse(line) as AgentEvent;
+        } catch {
+          continue;
+        }
+        if (event.type === 'message_end' && event.message?.role === 'assistant') {
+          const usage = event.message.usage ?? {};
+          stats.outputTokens += usage.output ?? 0;
+          stats.contextTokens = Math.max(stats.contextTokens, (usage.input ?? 0) + (usage.cacheRead ?? 0));
+        }
+        if (event.type === 'turn_end') {
+          stats.turns++;
+          stats.toolCalls += (event.message?.content ?? []).filter((block) => block.type === 'toolCall').length;
+          stats.toolErrors += (event.toolResults ?? []).filter((result) => result.isError).length;
+        }
+      }
+    });
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill('SIGTERM');
+    }, Math.max(0, deadline - Date.now()));
+    exitCode = await new Promise<number | null>((done) => child.on('exit', (code) => done(code)));
+    clearTimeout(timer);
+  }
   events.end();
+  stderr.end();
   return { ...stats, minutes: Math.round((Date.now() - started) / 600) / 100, timedOut, exitCode };
 }
 
@@ -151,7 +172,7 @@ function rootSchematic(project: string): string | undefined {
   return all.sort((a, b) => readFileSync(b).length - readFileSync(a).length)[0];
 }
 
-function score(dir: string, task: string): Omit<Result, 'task' | 'mode' | 'model' | 'minutes' | 'timedOut' | 'exitCode' | 'turns' | 'toolCalls' | 'toolErrors' | 'outputTokens' | 'contextTokens'> {
+function score(dir: string, task: string): Omit<Result, 'task' | 'mode' | 'model' | 'minutes' | 'timedOut' | 'exitCode' | 'turns' | 'toolCalls' | 'toolErrors' | 'nudges' | 'outputTokens' | 'contextTokens'> {
   const project = join(dir, 'project');
   const required = TASKS[task]!.parts;
   const empty = { components: 0, nets: 0, ercErrors: 0, ercWarnings: 0, unconnectedPins: 0, partsFound: [], partsMissing: Object.keys(required), pages: [], pass: false };
@@ -211,6 +232,7 @@ function summary(results: readonly Result[]): string {
       `${r.minutes} min${r.timedOut ? ' (timeout)' : ''}`,
       String(r.turns),
       `${r.toolCalls} (${r.toolErrors} err)`,
+      String(r.nudges ?? 0),
       `${Math.round(r.outputTokens / 1000)}k`,
       String(r.components),
       String(r.nets),
@@ -231,8 +253,8 @@ function summary(results: readonly Result[]): string {
     '',
     ...byMode,
     '',
-    'task | mode | model | time | turns | tool calls | output tokens | components | nets (≥ 2 pins) | ERC errors / warnings | required parts | result',
-    '---|---|---|---|---|---|---|---|---|---|---|---',
+    'task | mode | model | time | turns | tool calls | nudges | output tokens | components | nets (≥ 2 pins) | ERC errors / warnings | required parts | result',
+    '---|---|---|---|---|---|---|---|---|---|---|---|---',
     ...rows,
     '',
     'pass: KiCad reads the schematic, it has components, every part the request names, and no ERC error.',
@@ -257,6 +279,7 @@ const { values } = parseArgs({
     modes: { type: 'string', default: MODES.join(',') },
     jobs: { type: 'string', default: '1' },
     timeout: { type: 'string', default: '60' },
+    thinking: { type: 'string' },
     report: { type: 'string' },
   },
 });
@@ -299,7 +322,7 @@ async function worker() {
     mkdirSync(dir, { recursive: true });
     const prompt = [TASKS[task]!.prompt, mode === 'baseline' ? brief : '', UNATTENDED].filter(Boolean).join('\n\n');
     console.log(`start  ${relative(folder, dir)}`);
-    const run = await runAgent(dir, mode, model, prompt, Number(values.timeout));
+    const run = await runAgent(dir, mode, model, prompt, Number(values.timeout), values.thinking);
     const result: Result = { task, mode, model, ...run, ...(await scoreRun(dir, mode, task)) };
     writeFileSync(join(dir, 'result.json'), `${JSON.stringify(result, null, 2)}\n`);
     console.log(`done   ${relative(folder, dir)}: ${result.pass ? 'pass' : 'fail'}, ${result.minutes} min, ERC ${result.ercErrors} errors, ${result.components} components${result.problem ? `, ${result.problem}` : ''}`);
